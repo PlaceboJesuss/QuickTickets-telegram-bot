@@ -4,6 +4,8 @@ set -x
 
 ENV_FILE="/var/config/.env"
 
+export $(grep -v '^#' /var/config/.env | xargs)
+
 # -------------------
 # Copy .env.example if .env does not exist
 # -------------------
