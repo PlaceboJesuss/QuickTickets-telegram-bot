@@ -36,5 +36,23 @@ done
 php /var/www/artisan migrate --force
 # php /var/www/artisan db:seed --force   # Раскомментировать, если нужны сиды
 
+BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+
+# Получаем публичный IP сервера
+PUBLIC_IP=$(curl -s https://ifconfig.me)
+
+# Формируем URL webhook
+WEBHOOK_URL="https://${PUBLIC_IP}/tg_webhook"
+
+if [ -z "$BOT_TOKEN" ]; then
+  echo "BOT_TOKEN не задан в .env"
+  exit 1
+fi
+
+echo "Setting Telegram webhook..."
+curl -s -X POST "https://api.telegram.org/bot$BOT_TOKEN/setWebhook?url=$WEBHOOK_URL"
+
+echo "Webhook set to $WEBHOOK_URL"
+
 # Запускаем PHP-FPM
 php-fpm
