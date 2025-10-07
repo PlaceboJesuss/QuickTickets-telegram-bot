@@ -71,7 +71,7 @@ php /var/www/artisan migrate --force
 # -------------------
 BOT_TOKEN=$(grep -E '^TELEGRAM_BOT_TOKEN=' "$ENV_FILE" | cut -d '=' -f2 | tr -d '\r\n')
 PUBLIC_IP=$(curl -s https://ifconfig.me)
-WEBHOOK_URL="https://${PUBLIC_IP}/tg_webhook"
+WEBHOOK_URL="http://${PUBLIC_IP}/tg_webhook"
 
 if [ -z "$BOT_TOKEN" ]; then
   echo "BOT_TOKEN not set in .env"
