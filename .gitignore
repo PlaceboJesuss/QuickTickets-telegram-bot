@@ -1,0 +1,54 @@
+# Laravel / PHP
+/vendor
+/node_modules
+/public/storage
+/storage/*.key
+.env
+.phpunit.result.cache
+Homestead.yaml
+Homestead.json
+/.vagrant
+composer.lock
+
+# Laravel specific
+/storage/logs/*
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+
+# Ignore Laravel Telescope
+/telescope
+
+# IDE / Editor files
+.idea
+.vscode
+*.sublime-project
+*.sublime-workspace
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Logs and dumps
+*.log
+*.sql
+*.sqlite
+dump.rdb
+
+# NPM / Yarn / Vite
+npm-debug.log
+yarn-error.log
+pnpm-debug.log
+vite.config.ts.timestamp-*
+.vite
+/build
+
+# Docker
+docker-compose.override.yml
+/.docker
+
+# Other temp
+*.swp
+*.bak
+*.tmp
+*.old
