@@ -1,4 +1,3 @@
-```bash
 #!/bin/bash
 set -e
 set -x 
@@ -87,4 +86,3 @@ echo "Webhook set to $WEBHOOK_URL"
 # Start PHP-FPM
 # -------------------
 exec php-fpm
-```
