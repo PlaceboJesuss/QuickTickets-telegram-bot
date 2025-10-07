@@ -69,7 +69,7 @@ php /var/www/artisan migrate --force
 # -------------------
 # Set Telegram webhook
 # -------------------
-BOT_TOKEN==$(grep -E '^TELEGRAM_BOT_TOKEN=' "$ENV_FILE" | cut -d '=' -f2 | tr -d '\r\n')
+BOT_TOKEN=$(grep -E '^TELEGRAM_BOT_TOKEN=' "$ENV_FILE" | cut -d '=' -f2 | tr -d '\r\n')
 PUBLIC_IP=$(curl -s https://ifconfig.me)
 WEBHOOK_URL="https://${PUBLIC_IP}/tg_webhook"
 
