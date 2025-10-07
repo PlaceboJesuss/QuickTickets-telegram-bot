@@ -1,3 +1,4 @@
+```bash
 #!/bin/bash
 set -e
 set -x 
@@ -5,73 +6,76 @@ set -x
 ENV_FILE="/var/config/.env"
 
 # -------------------
-# Если .env нет — копируем пример
+# Copy .env.example if .env does not exist
 # -------------------
 if [ ! -f "$ENV_FILE" ]; then
     cp /var/config/.env.example "$ENV_FILE"
-    echo "Создан .env из .env.example"
+    echo ".env created from .env.example"
 fi
 
 # -------------------
-# Получаем значение APP_KEY и убираем пробелы/CRLF
+# Read APP_KEY and strip spaces/CRLF
 # -------------------
 KEY_VALUE=$(grep -E '^APP_KEY=' "$ENV_FILE" | cut -d '=' -f2 | tr -d '\r\n')
 
-echo "Значение APP_KEY после очистки: '$KEY_VALUE'"
+echo "APP_KEY value after cleanup: '$KEY_VALUE'"
 
 if [ -z "$KEY_VALUE" ]; then
-    echo "APP_KEY пустой или отсутствует — генерируем"
+    echo "APP_KEY is empty or missing — generating..."
     php /var/www/artisan key:generate --ansi
 else
-    echo "APP_KEY уже есть — генерация не нужна"
+    echo "APP_KEY already exists — skipping generation"
 fi
 
 # -------------------
-# Права на storage и bootstrap/cache
+# Set permissions for storage and bootstrap/cache
 # -------------------
 chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 chmod -R 775 /var/www/storage /var/www/bootstrap/cache
 
-
-# Устанавливаем Composer, если его нет
+# -------------------
+# Install Composer if not found
+# -------------------
 if ! command -v composer >/dev/null 2>&1; then
-    echo "Composer не найден — устанавливаем..."
+    echo "Composer not found — installing..."
     curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 fi
 
 # -------------------
-# Установка зависимостей Composer
+# Install Composer dependencies if missing
 # -------------------
 if [ ! -f /var/www/vendor/autoload.php ]; then
-    echo "Устанавливаем зависимости Composer..."
+    echo "Installing Composer dependencies..."
     composer install --no-interaction --optimize-autoloader
 else
-    echo "Composer dependencies уже установлены"
+    echo "Composer dependencies already installed"
 fi
 
 # -------------------
-# Ждём, пока MySQL станет доступен
+# Wait for MySQL to become available
 # -------------------
-echo "Ожидание MySQL..."
-until php /var/www/artisan migrate:status >/dev/null 2>&1; do
+echo 'Waiting for MySQL...';
+
+until php -r "try { new PDO('mysql:host='.getenv('DB_HOST').';dbname='.getenv('DB_DATABASE'), getenv('DB_USERNAME'), getenv('DB_PASSWORD')); } catch (Exception \$e) { exit(1); }"; do
+    echo 'Waiting for MySQL...';
     sleep 2
 done
 
 # -------------------
-# Выполняем миграции (и сиды при необходимости)
+# Run migrations (and seed if needed)
 # -------------------
 php /var/www/artisan migrate --force
-# php /var/www/artisan db:seed --force   # Раскомментировать, если нужны сиды
+# php /var/www/artisan db:seed --force   # Uncomment if seeds are needed
 
 # -------------------
-# Установка Telegram webhook
+# Set Telegram webhook
 # -------------------
 BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
 PUBLIC_IP=$(curl -s https://ifconfig.me)
 WEBHOOK_URL="https://${PUBLIC_IP}/tg_webhook"
 
 if [ -z "$BOT_TOKEN" ]; then
-  echo "BOT_TOKEN не задан в .env"
+  echo "BOT_TOKEN not set in .env"
   exit 1
 fi
 
@@ -80,6 +84,7 @@ curl -s -X POST "https://api.telegram.org/bot$BOT_TOKEN/setWebhook?url=$WEBHOOK_
 echo "Webhook set to $WEBHOOK_URL"
 
 # -------------------
-# Запуск PHP-FPM
+# Start PHP-FPM
 # -------------------
 exec php-fpm
+```
