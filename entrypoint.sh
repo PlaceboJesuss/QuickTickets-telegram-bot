@@ -4,8 +4,6 @@ set -x
 
 ENV_FILE="/var/config/.env"
 
-export $(grep -v '^#' /var/config/.env | xargs)
-
 # -------------------
 # Copy .env.example if .env does not exist
 # -------------------
@@ -55,10 +53,10 @@ fi
 # -------------------
 # Wait for MySQL to become available
 # -------------------
-echo 'Waiting for MySQL...';
+echo 'Waiting for MySQL via Laravel...'
 
-until php -r "try { new PDO('mysql:host='.getenv('DB_HOST').';dbname='.getenv('DB_DATABASE'), getenv('DB_USERNAME'), getenv('DB_PASSWORD')); } catch (Exception \$e) { exit(1); }"; do
-    echo 'Waiting for MySQL...';
+until php /var/www/artisan tinker --execute="DB::connection()->getPdo(); echo 'OK';" >/dev/null 2>&1; do
+    echo 'Waiting for MySQL...'
     sleep 2
 done
 
