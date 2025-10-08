@@ -11,8 +11,7 @@ RUN apt-get update && apt-get install -y \
 # Копируем Laravel в контейнер
 # -------------------
 WORKDIR /var/www/
-COPY ./laravel /var/www
-COPY ./.env /var/config/.env
+# COPY ./laravel /var/www
 
 # -------------------
 # Копируем entrypoint для инициализации Laravel

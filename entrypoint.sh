@@ -70,8 +70,8 @@ php /var/www/artisan migrate --force
 # Set Telegram webhook
 # -------------------
 BOT_TOKEN=$(grep -E '^TELEGRAM_BOT_TOKEN=' "$ENV_FILE" | cut -d '=' -f2 | tr -d '\r\n')
-PUBLIC_IP=$(curl -s https://ifconfig.me)
-WEBHOOK_URL="http://${PUBLIC_IP}/tg_webhook"
+APP_DOMAIN=$(grep -E '^APP_DOMAIN=' "$ENV_FILE" | cut -d '=' -f2 | tr -d '\r\n')
+WEBHOOK_URL="https://${APP_DOMAIN}/tg_webhook"
 
 if [ -z "$BOT_TOKEN" ]; then
   echo "BOT_TOKEN not set in .env"
