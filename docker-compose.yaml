@@ -1,3 +1,5 @@
+version: "3.8"
+
 services:
   app:
     build:
@@ -10,16 +12,39 @@ services:
     environment:
       - APP_ENV_PATH=/var/config
     restart: always
+    depends_on:
+      - certbot
 
   nginx:
     image: nginx:alpine
-    ports:
-      - "80:80"
+    depends_on:
+      - certbot
+      - app
     volumes:
       - .:/var/www
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf
-    depends_on:
-      - app
+      - ./nginx.conf.template:/etc/nginx/conf.d/default.conf.template
+      - ./nginx-entrypoint.sh:/usr/local/bin/nginx-entrypoint.sh
+    environment:
+      - APP_DOMAIN=${APP_DOMAIN}
+    entrypoint: /usr/local/bin/nginx-entrypoint.sh
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - laravel
+    restart: always
+    
+  certbot:
+    image: certbot/certbot
+    environment:
+      - CERTBOT_DOMAIN=${APP_DOMAIN}
+      - CERTBOT_EMAIL=${APP_EMAIL}
+    volumes:
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
+      - ./certbot-www:/var/www/certbot
+      - ./certbot-entrypoint.sh:/usr/local/bin/certbot-entrypoint.sh
+    entrypoint: /usr/local/bin/certbot-entrypoint.sh
     networks:
       - laravel
     restart: always
