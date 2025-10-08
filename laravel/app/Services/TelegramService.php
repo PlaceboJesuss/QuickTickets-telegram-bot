@@ -13,7 +13,6 @@ class TelegramService
 {
     private function getCommandHandler($message): Command
     {
-        echo $message;
         if (str_starts_with($message, 'remove_place_')) {
             $id = (int) substr($message, strlen('remove_place_'));
 
