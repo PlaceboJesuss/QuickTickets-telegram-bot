@@ -1,7 +1,7 @@
 FROM nginx:alpine
 
-COPY nginx.conf.template /etc/nginx/conf.d/default.conf.template
-COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+COPY ./nginx.conf.template /etc/nginx/conf.d/default.conf.template
+COPY ./entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 EXPOSE 80 443
