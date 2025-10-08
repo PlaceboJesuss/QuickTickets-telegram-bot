@@ -1,9 +1,7 @@
-version: "3.8"
-
 services:
   app:
     build:
-      context: .
+      context: ./app
     volumes:
       - ./.env:/var/config/.env
       - ./laravel:/var/www
@@ -16,7 +14,8 @@ services:
       - certbot
 
   nginx:
-    image: nginx:alpine
+    build:
+      context: ./nginx
     depends_on:
       - certbot
       - app
@@ -35,19 +34,18 @@ services:
     restart: always
     
   certbot:
-    image: certbot/certbot
+    build:
+      context: ./certbot
     environment:
-      - CERTBOT_DOMAIN=${APP_DOMAIN}
-      - CERTBOT_EMAIL=${APP_EMAIL}
+      - APP_DOMAIN=${APP_DOMAIN}
+      - APP_EMAIL=${APP_EMAIL}
     volumes:
       - certbot-etc:/etc/letsencrypt
       - certbot-var:/var/lib/letsencrypt
-      - ./certbot-www:/var/www/certbot
-      - ./certbot-entrypoint.sh:/usr/local/bin/certbot-entrypoint.sh
-    entrypoint: /usr/local/bin/certbot-entrypoint.sh
+      - ./www:/var/www/certbot
     networks:
       - laravel
-    restart: always
+    restart: unless-stopped
 
   mysql:
     container_name: mysql
@@ -82,3 +80,5 @@ networks:
 
 volumes:
   db_data:
+  certbot-etc:
+  certbot-var:
