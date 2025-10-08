@@ -20,8 +20,6 @@ services:
     depends_on:
       app:
         condition: service_started
-      certbot:
-        condition: service_started
     volumes:
       - .:/var/www
       - ./certbot/www:/var/www/certbot
@@ -38,6 +36,9 @@ services:
 
   certbot:
     image: certbot/certbot
+    depends_on:
+      nginx:
+        condition: service_started
     volumes:
       - certbot-etc:/etc/letsencrypt
       - certbot-var:/var/lib/letsencrypt
