@@ -1,8 +1,7 @@
 FROM nginx:alpine
 
 # Устанавливаем openssl для генерации DH параметров
-RUN apt-get update && apt-get install -y --no-install-recommends openssl && \
-    rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache openssl
 
 COPY ./nginx.conf.template /etc/nginx/conf.d/default.conf.template
 COPY ./entrypoint.sh /usr/local/bin/entrypoint.sh
