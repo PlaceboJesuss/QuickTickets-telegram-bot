@@ -7,6 +7,8 @@ services:
       - ./laravel:/var/www
     networks:
       - laravel
+    depends_on:
+      - certbot
     environment:
       - APP_ENV_PATH=/var/config
     restart: always
@@ -57,6 +59,8 @@ services:
     networks:
       - laravel
     restart: always
+    depends_on:
+      - certbot
     command: --max_connections=50 --innodb_buffer_pool_size=64M --key_buffer_size=16M --performance_schema=off
 
   phpmyadmin:
