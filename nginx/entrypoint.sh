@@ -32,11 +32,8 @@ EOF
 fi
 
 if [ ! -f "$DH_PATH" ]; then
-  echo "⚙️  Downloading DH parameters..."
-  wget -q https://raw.githubusercontent.com/certbot/certbot/master/certbot/ssl-dhparams.pem -O "$DH_PATH" || {
-    echo "⚠️  Failed to download DH params, creating empty placeholder."
-    touch "$DH_PATH"
-  }
+  echo "⚙️ Generating DH parameters (this may take ~20 seconds)..."
+  openssl dhparam -out "$DH_PATH" 2048
 fi
 
 # -----------------------------------------------
