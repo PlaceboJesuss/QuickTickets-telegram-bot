@@ -1,31 +1,29 @@
 #!/bin/sh
 set -e
 
-# Папки для certbot
-CERTBOT_ETC=/etc/letsencrypt
-CERTBOT_VAR=/var/lib/letsencrypt
-WEBROOT=/var/www/certbot
+# Подставляем DOMAIN из окружения в шаблон nginx.conf.template
+envsubst '${DOMAIN}' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf
 
-mkdir -p $WEBROOT
+CERT_PATH="/etc/letsencrypt/live/${DOMAIN}/fullchain.pem"
+KEY_PATH="/etc/letsencrypt/live/${DOMAIN}/privkey.pem"
 
-# Проверяем, задан ли домен
-if [ -z "$APP_DOMAIN" ]; then
-  echo "APP_DOMAIN not set in environment"
-  exit 1
+# Проверяем, есть ли сертификаты
+if [ ! -f "$CERT_PATH" ] || [ ! -f "$KEY_PATH" ]; then
+  echo "SSL certificates not found for ${DOMAIN}. Starting temporary HTTP server..."
+  # Запуск Nginx без SSL, чтобы certbot мог получить сертификаты
+  nginx -g 'daemon off;' &
+  TEMP_PID=$!
+
+  echo "Waiting for SSL certificates to be created..."
+  while [ ! -f "$CERT_PATH" ] || [ ! -f "$KEY_PATH" ]; do
+    sleep 2
+  done
+
+  echo "Certificates are ready! Restarting Nginx with SSL..."
+  kill "$TEMP_PID"
+  sleep 2
 fi
 
-if [ -z "$APP_EMAIL" ]; then
-  echo "APP_EMAIL not set in environment"
-  exit 1
-fi
-
-# Получаем сертификат, если его ещё нет
-if [ ! -f "$CERTBOT_ETC/live/$APP_DOMAIN/fullchain.pem" ]; then
-  echo "Requesting certificate for $APP_DOMAIN..."
-  certbot certonly --webroot -w $WEBROOT -d $APP_DOMAIN --email $APP_EMAIL --agree-tos --non-interactive
-else
-  echo "Certificate already exists for $APP_DOMAIN"
-fi
-
-# Контейнер просто ждёт, чтобы nginx мог использовать сертификаты
-tail -f /dev/null
+# Запускаем основной процесс Nginx
+echo "Starting Nginx with SSL for ${DOMAIN}..."
+exec nginx -g 'daemon off;'

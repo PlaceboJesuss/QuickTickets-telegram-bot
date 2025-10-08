@@ -10,14 +10,11 @@ services:
     environment:
       - APP_ENV_PATH=/var/config
     restart: always
-    depends_on:
-      - certbot
 
   nginx:
     build:
       context: ./nginx
     depends_on:
-      - certbot
       - app
     volumes:
       - .:/var/www
@@ -43,6 +40,8 @@ services:
       - ./www:/var/www/certbot
     networks:
       - laravel
+    depends_on:
+      - nginx
     restart: unless-stopped
 
   mysql:

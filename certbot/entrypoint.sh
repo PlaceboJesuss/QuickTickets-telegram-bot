@@ -4,8 +4,8 @@ set -e
 # -----------------------------
 # Configuration
 # -----------------------------
-CERTBOT_DOMAIN=${CERTBOT_DOMAIN}
-CERTBOT_EMAIL=${CERTBOT_EMAIL}
+CERTBOT_DOMAIN=${APP_DOMAIN}
+CERTBOT_EMAIL=${APP_EMAIL}
 WEBROOT_PATH=/var/www/certbot
 
 # -----------------------------
@@ -13,6 +13,7 @@ WEBROOT_PATH=/var/www/certbot
 # -----------------------------
 if [ ! -d "/etc/letsencrypt/live/$CERTBOT_DOMAIN" ]; then
     echo ">>> Obtaining new SSL certificate for $CERTBOT_DOMAIN..."
+    sleep 10
     certbot certonly --webroot -w $WEBROOT_PATH --email $CERTBOT_EMAIL --agree-tos --no-eff-email -d $CERTBOT_DOMAIN
 else
     echo ">>> SSL certificate already exists, skipping initial obtain."
