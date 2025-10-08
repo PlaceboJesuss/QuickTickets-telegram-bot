@@ -15,7 +15,8 @@ class TelegramWebhookController extends Controller
 
         // Здесь можно обрабатывать входящие сообщения
         $update = collect($request->all());
-
+        print_r($request->all()); 
+        print_r(collect($request->all())); 
         // Пример: ответ на команду /start
         if ($update->message && isset($update->message->text)) {
             $chatId = $update->message->chat->id;
