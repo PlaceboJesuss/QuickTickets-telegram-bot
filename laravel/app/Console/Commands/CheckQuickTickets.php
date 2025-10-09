@@ -89,6 +89,9 @@ class CheckQuickTickets extends Command
                                         'reply_markup' => $keyboard
                                     ]);
                                 }
+                            } else if ($dbPerformance->sold_out == false && $soldOut == true) {
+                                $dbPerformance->sold_out = $soldOut;
+                                $dbPerformance->save();
                             }
                         }
                     }
