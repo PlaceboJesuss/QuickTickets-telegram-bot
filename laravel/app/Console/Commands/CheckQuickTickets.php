@@ -56,7 +56,7 @@ class CheckQuickTickets extends Command
 
                         $dbPerformance = Performance::findPerformance($place, $name, $timestamp);
 
-                        $keyboard = Keyboard::inline()->row(Keyboard::inlineButton(['text' => 'Купить билет', 'url' => "https://quicktickets.ru$href"]));
+                        $keyboard = Keyboard::make()->inline()->row(Keyboard::inlineButton(['text' => 'Купить билет', 'url' => "https://quicktickets.ru$href"]));
 
                         if (!$dbPerformance) {
                             $dbPerformance = new Performance();
