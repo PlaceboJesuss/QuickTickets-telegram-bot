@@ -51,7 +51,11 @@ class CheckQuickTickets extends Command
                     $sessions = $quickTicketsParserService->getPerformanceSessions($performance);
                     foreach ($sessions as $session) {
                         $soldOut = $quickTicketsParserService->getSessionSoldOut($session);
-                        $timestamp = $quickTicketsParserService->getSessionTimestamp($session);
+                        try {
+                            $timestamp = $quickTicketsParserService->getSessionTimestamp($session);
+                        } catch (Exception $e) {
+                            continue;
+                        }
                         $href = $quickTicketsParserService->getSessionLink($session);
 
                         $dbPerformance = Performance::findPerformance($place, $name, $timestamp);
