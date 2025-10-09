@@ -99,8 +99,7 @@ final class DefaultCommand extends Command
                     }
 
                     UserPlace::firstOrCreate(
-                        ['place_id' => $place->id],
-                        ['chat_id' => $telegramUser->chat_id]
+                        ['place_id' => $place->id, 'chat_id' => $telegramUser->chat_id]
                     );
 
                     Telegram::sendMessage([
