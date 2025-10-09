@@ -83,6 +83,32 @@ curl -s -X POST "https://api.telegram.org/bot$BOT_TOKEN/setWebhook?url=$WEBHOOK_
 echo "Webhook set to $WEBHOOK_URL"
 
 # -------------------
-# Start PHP-FPM
+# Background job loop: check tickets every 30 seconds
+# -------------------
+(
+  LOG_FILE="/var/www/storage/logs/tickets.log"
+  MAX_LINES=1000
+  echo "🕒 Starting ticket check loop..." | tee -a "$LOG_FILE"
+
+  while true; do
+    TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
+    echo "[$TIMESTAMP] Running check-quick-tickets..." | tee -a "$LOG_FILE"
+
+    php /var/www/artisan app:check-quick-tickets >>"$LOG_FILE" 2>&1 || echo "[$TIMESTAMP] ⚠️ check-quick-tickets failed" >>"$LOG_FILE"
+
+    # -------------------
+    # Auto-truncate log to last MAX_LINES
+    # -------------------
+    if [ -f "$LOG_FILE" ]; then
+      tail -n $MAX_LINES "$LOG_FILE" > "$LOG_FILE.tmp" && mv "$LOG_FILE.tmp" "$LOG_FILE"
+    fi
+
+    sleep 30
+  done
+) &
+
+
+# -------------------
+# Start PHP-FPM (main process)
 # -------------------
 exec php-fpm
