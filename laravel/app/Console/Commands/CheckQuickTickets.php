@@ -78,12 +78,14 @@ class CheckQuickTickets extends Command
                                 ]);
                             }
                         } else {
-                            if (!!$dbPerformance->sold_out != $soldOut) {
+                            if ($dbPerformance->sold_out == true && $soldOut == false) {
+                                $dbPerformance->sold_out = $soldOut;
+                                $dbPerformance->save();
                                 foreach ($place->users as $user) {
                                     Telegram::sendPhoto([
                                         'chat_id' => $user->chat_id,
                                         'photo' => InputFile::create($image),
-                                        'caption' => "Появились балеты на \"$name\"",
+                                        'caption' => "Появились билеты на \"$name\"",
                                         'reply_markup' => $keyboard
                                     ]);
                                 }
