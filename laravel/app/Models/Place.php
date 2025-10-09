@@ -10,7 +10,7 @@ class Place extends Model
 
     public function users()
     {
-        return $this->belongsToMany(TelegramUser::class, 'place_user', 'place_id', 'chat_id');
+        return $this->belongsToMany(TelegramUser::class, 'user_places', 'place_id', 'chat_id');
     }
 
     public function performances()
