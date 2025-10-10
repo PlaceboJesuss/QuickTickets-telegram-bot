@@ -29,7 +29,7 @@ class TelegramService
         };
     }
 
-    public function handleMessage(int $chatId, string $username, string $message): void
+    public function handleMessage(int $chatId, ?string $username, string $message): void
     {
         $commandHandler = $this->getCommandHandler($message);
         $commandHandler->setArguments([
