@@ -73,7 +73,9 @@ class CheckQuickTickets extends Command
                                 Telegram::sendPhoto([
                                     'chat_id' => $user->chat_id,
                                     'photo' => InputFile::create($image),
-                                    'caption' => "Появился новый спектакль \"$name\"",
+                                    'caption' => "Появился новый спектакль \"$name\""
+                                        . "\n" . date('Y-m-d H:i:s', $timestamp)
+                                        . "\n\n" . $place->name,
                                     'reply_markup' => $keyboard
                                 ]);
                             }
@@ -85,7 +87,9 @@ class CheckQuickTickets extends Command
                                     Telegram::sendPhoto([
                                         'chat_id' => $user->chat_id,
                                         'photo' => InputFile::create($image),
-                                        'caption' => "Появились билеты на \"$name\"",
+                                        'caption' => "Появились билеты на \"$name\""
+                                            . "\n" . date('Y-m-d H:i:s', $timestamp)
+                                            . "\n\n" . $place->name,
                                         'reply_markup' => $keyboard
                                     ]);
                                 }
