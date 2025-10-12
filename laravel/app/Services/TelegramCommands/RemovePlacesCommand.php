@@ -62,9 +62,10 @@ final class RemovePlacesCommand extends Command
             return;
         }
 
-        $keyboard = Keyboard::make()->inline()->row(
-            array_map(fn(array $place) => Keyboard::inlineButton(["text" => $place['name'], "callback_data" => "remove_place_" . $place["id"]]), $places->toArray())
-        );
+        $keyboard = Keyboard::make()->inline();
+        foreach($places->toArray() as $place){
+            $keyboard->row([Keyboard::inlineButton(["text" => $place['name'], "callback_data" => "remove_place_" . $place["id"]])]);
+        }
 
         // Отправляем сообщение с клавиатурой
         Telegram::sendMessage([
