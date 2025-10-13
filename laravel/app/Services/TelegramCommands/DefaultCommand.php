@@ -6,11 +6,12 @@ use App\Models\Performance;
 use App\Models\Place;
 use App\Models\TelegramUser;
 use App\Models\UserPlace;
-use App\Services\QuickTicketsParserService;
+use App\Services\QuickTicketsParsers\DomParser;
+use App\Services\QuickTicketsParsers\PerformanceParser;
+use App\Services\QuickTicketsParsers\PlaceParser;
+use App\Services\QuickTicketsParsers\SessionParser;
 use App\Services\QuickTicketsService;
 use Exception;
-use Illuminate\Support\Facades\Http;
-use KubAT\PhpSimple\HtmlDomParser;
 use Telegram\Bot\Commands\Command;
 use Telegram\Bot\Keyboard\Keyboard;
 use Telegram\Bot\Laravel\Facades\Telegram;
@@ -45,7 +46,6 @@ final class DefaultCommand extends Command
         $message = $this->argument('message');
 
         $quickTicketsService = new QuickTicketsService();
-        $quickTicketsParserService = new QuickTicketsParserService();
 
         $telegramUser = TelegramUser::firstOrCreate(
             ['chat_id' => $chatId],
@@ -65,8 +65,8 @@ final class DefaultCommand extends Command
             $placeUrl = $this->normalizeQuickticketsUrl($message);
             if ($placeUrl) {
                 $html = $quickTicketsService->getDOMbyUrl($placeUrl);
-                $dom = $quickTicketsParserService->parse($html);
-                $placeName = $quickTicketsParserService->getPlaceName($dom);
+                $dom = DomParser::parse($html);
+                $placeName = PlaceParser::getPlaceName($dom);
 
                 if ($placeName) {
                     $place = Place::firstOrNew(['url' => $placeUrl]);
@@ -75,15 +75,15 @@ final class DefaultCommand extends Command
                         $place->name = $placeName;
                         $place->save();
 
-                        $performances = $quickTicketsParserService->getPerformances($dom);
+                        $performances = PerformanceParser::getPerformances($dom);
                         foreach ($performances as $performance) {
-                            $name = $quickTicketsParserService->getPerformanceName($performance);
+                            $name = PerformanceParser::getPerformanceName($performance);
 
-                            $sessions = $quickTicketsParserService->getPerformanceSessions($performance);
+                            $sessions = SessionParser::getPerformanceSessions($performance);
                             foreach ($sessions as $session) {
                                 try {
-                                    $soldOut = $quickTicketsParserService->getSessionSoldOut($session);
-                                    $timestamp = $quickTicketsParserService->getSessionTimestamp($session);
+                                    $soldOut = SessionParser::getSessionSoldOut($session);
+                                    $timestamp = SessionParser::getSessionTimestamp($session);
                                 } catch (Exception $e) {
                                     continue;
                                 }

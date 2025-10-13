@@ -1,55 +1,25 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\QuickTicketsParsers;
 
 use Carbon\Carbon;
 use Exception;
-use KubAT\PhpSimple\HtmlDomParser;
-use simple_html_dom\simple_html_dom_node;
+use simple_html_dom\simple_html_dom_node as SimpleHtmlDomNode;
 
-class QuickTicketsParserService
+
+class SessionParser
 {
-    public function parse(string $html): simple_html_dom_node
-    {
-        $dom = HtmlDomParser::str_get_html($html);
-
-        if (!$dom) {
-            throw new Exception("Не удалось распарсить HTML");
-        }
-
-        return $dom->find('body', 0);
-    }
-
-    public function getPlaceName(simple_html_dom_node $dom): ?string{
-        return $dom->find('#organisation .head .info a.title h2', 0)?->innertext;
-    }
-
-    public function getPerformances(simple_html_dom_node $dom): array
-    {
-        return $dom->find('.body #elems-list .elem');
-    }
-
-    public function getPerformanceName(simple_html_dom_node $performance): ?string
-    {
-        return $performance->find('.c h3 a .underline', 0)?->innertext;
-    }
-
-    public function getPerformanceImage(simple_html_dom_node $performance): ?string
-    {
-        return $performance->find('a img.polaroid', 0)?->src;
-    }
-
-    public function getPerformanceSessions(simple_html_dom_node $performance): array
+    public static function getPerformanceSessions(SimpleHtmlDomNode $performance): array
     {
         return $performance->find('.c .sessions .session-column');
     }
 
-    public function getSessionSoldOut(simple_html_dom_node $session): bool
+    public static function getSessionSoldOut(SimpleHtmlDomNode $session): bool
     {
         return $session->find('span', 1)?->innertext == '(мест нет)';
     }
 
-    public function getSessionTimestamp(simple_html_dom_node $session): int
+    public static function getSessionTimestamp(SimpleHtmlDomNode $session): int
     {
         $dateString = $session->find('a.notUnderline .underline', 0)?->innertext;
 
@@ -99,7 +69,7 @@ class QuickTicketsParserService
         throw new \Exception("Не удалось распарсить дату: $dateString");
     }
 
-    public function getSessionLink(simple_html_dom_node $session): ?string
+    public static function getSessionLink(SimpleHtmlDomNode $session): ?string
     {
         return $session->find('a.notUnderline', 0)?->href;
     }

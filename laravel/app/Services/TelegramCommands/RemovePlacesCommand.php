@@ -3,7 +3,6 @@
 namespace App\Services\TelegramCommands;
 
 use App\Models\TelegramUser;
-use Illuminate\Support\Facades\DB;
 use Telegram\Bot\Commands\Command;
 use Telegram\Bot\Keyboard\Keyboard;
 use Telegram\Bot\Laravel\Facades\Telegram;
