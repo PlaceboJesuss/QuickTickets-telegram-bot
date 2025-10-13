@@ -65,6 +65,7 @@ class CheckQuickTickets extends Command
                         if (!$dbPerformance) {
                             $dbPerformance = new Performance();
                             $dbPerformance->name = $name;
+                            $dbPerformance->place_id = $place->id;
                             $dbPerformance->time = date('Y-m-d H:i:s', $timestamp);
                             $dbPerformance->sold_out = $soldOut;
                             $dbPerformance->save();
