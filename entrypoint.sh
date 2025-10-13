@@ -83,8 +83,8 @@ if [ -z "$SECRET_TOKEN" ]; then
   SECRET_TOKEN=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 32)
   echo "🔑 Генерируем TELEGRAM_BOT_SECRET_TOKEN..."
   # Удалим старую строку (если есть пустая) и добавим новую
-  sed -i '/^TELEGRAM_BOT_SECRET_TOKEN=/d' .env
-  echo "TELEGRAM_BOT_SECRET_TOKEN=${SECRET_TOKEN}" >> .env
+  sed -i '/^TELEGRAM_BOT_SECRET_TOKEN=/d' "$ENV_FILE"
+  echo "TELEGRAM_BOT_SECRET_TOKEN=${SECRET_TOKEN}" >> "$ENV_FILE"
   echo "✅ Новый токен добавлен в .env"
 fi
 
