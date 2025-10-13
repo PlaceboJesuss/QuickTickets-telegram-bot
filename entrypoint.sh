@@ -70,6 +70,7 @@ php /var/www/artisan migrate --force
 # Set Telegram webhook
 # -------------------
 BOT_TOKEN=$(grep -E '^TELEGRAM_BOT_TOKEN=' "$ENV_FILE" | cut -d '=' -f2 | tr -d '\r\n')
+SECRET_TOKEN=$(grep -E '^TELEGRAM_BOT_SECRET_TOKEN=' "$ENV_FILE" | cut -d '=' -f2 | tr -d '\r\n')
 APP_DOMAIN=$(grep -E '^APP_DOMAIN=' "$ENV_FILE" | cut -d '=' -f2 | tr -d '\r\n')
 WEBHOOK_URL="https://${APP_DOMAIN}/api/tg_webhook"
 
@@ -78,8 +79,17 @@ if [ -z "$BOT_TOKEN" ]; then
   exit 1
 fi
 
+if [ -z "$SECRET_TOKEN" ]; then
+  SECRET_TOKEN=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 32)
+  echo "🔑 Генерируем TELEGRAM_BOT_SECRET_TOKEN..."
+  # Удалим старую строку (если есть пустая) и добавим новую
+  sed -i '/^TELEGRAM_BOT_SECRET_TOKEN=/d' .env
+  echo "TELEGRAM_BOT_SECRET_TOKEN=${SECRET_TOKEN}" >> .env
+  echo "✅ Новый токен добавлен в .env"
+fi
+
 echo "Setting Telegram webhook..."
-curl -s -X POST "https://api.telegram.org/bot$BOT_TOKEN/setWebhook?url=$WEBHOOK_URL"
+curl -s -X POST "https://api.telegram.org/bot$BOT_TOKEN/setWebhook?url=$WEBHOOK_URL&secret_token=$SECRET_TOKEN"
 echo "Webhook set to $WEBHOOK_URL"
 
 # -------------------

@@ -4,13 +4,13 @@ namespace App\Console\Commands;
 
 use App\Models\Performance;
 use App\Models\Place;
-use App\Services\QuickTicketsParserService;
+use App\Services\QuickTicketsParsers\DomParser;
+use App\Services\QuickTicketsParsers\PerformanceParser;
+use App\Services\QuickTicketsParsers\SessionParser;
 use App\Services\QuickTicketsService;
 use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
-use simple_html_dom\simple_html_dom;
-use simple_html_dom\simple_html_dom_node;
 use Telegram\Bot\FileUpload\InputFile;
 use Telegram\Bot\Keyboard\Keyboard;
 use Telegram\Bot\Laravel\Facades\Telegram;
@@ -34,29 +34,29 @@ class CheckQuickTickets extends Command
     /**
      * Execute the console command.
      */
-    public function handle(QuickTicketsService $quickTicketsService, QuickTicketsParserService $quickTicketsParserService)
+    public function handle(QuickTicketsService $quickTicketsService)
     {
         $places = Place::all();
         foreach ($places as $place) {
             try {
 
                 $html = $quickTicketsService->getDOMbyUrl($place->url);
-                $dom = $quickTicketsParserService->parse($html);
+                $dom = DomParser::parse($html);
 
-                $performances = $quickTicketsParserService->getPerformances($dom);
+                $performances = PerformanceParser::getPerformances($dom);
                 foreach ($performances as $performance) {
-                    $name = $quickTicketsParserService->getPerformanceName($performance);
-                    $image = $quickTicketsParserService->getPerformanceImage($performance);
+                    $name = PerformanceParser::getPerformanceName($performance);
+                    $image = PerformanceParser::getPerformanceImage($performance);
 
-                    $sessions = $quickTicketsParserService->getPerformanceSessions($performance);
+                    $sessions = SessionParser::getPerformanceSessions($performance);
                     foreach ($sessions as $session) {
-                        $soldOut = $quickTicketsParserService->getSessionSoldOut($session);
+                        $soldOut = SessionParser::getSessionSoldOut($session);
                         try {
-                            $timestamp = $quickTicketsParserService->getSessionTimestamp($session);
+                            $timestamp = SessionParser::getSessionTimestamp($session);
                         } catch (Exception $e) {
                             continue;
                         }
-                        $href = $quickTicketsParserService->getSessionLink($session);
+                        $href = SessionParser::getSessionLink($session);
 
                         $dbPerformance = Performance::findPerformance($place, $name, $timestamp);
 
