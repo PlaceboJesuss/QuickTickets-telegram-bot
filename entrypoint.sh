@@ -82,10 +82,11 @@ fi
 if [ -z "$SECRET_TOKEN" ]; then
   SECRET_TOKEN=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 32)
   echo "🔑 Генерируем TELEGRAM_BOT_SECRET_TOKEN..."
-  # Удалим старую строку (если есть пустая) и добавим новую
-  sed -i '/^TELEGRAM_BOT_SECRET_TOKEN=/d' "$ENV_FILE"
+  grep -v '^TELEGRAM_BOT_SECRET_TOKEN=' "$ENV_FILE" > "$ENV_FILE.tmp" && mv "$ENV_FILE.tmp" "$ENV_FILE"
   echo "TELEGRAM_BOT_SECRET_TOKEN=${SECRET_TOKEN}" >> "$ENV_FILE"
   echo "✅ Новый токен добавлен в .env"
+else
+  echo "ℹ️ TELEGRAM_BOT_SECRET_TOKEN уже задан."
 fi
 
 echo "Setting Telegram webhook..."
