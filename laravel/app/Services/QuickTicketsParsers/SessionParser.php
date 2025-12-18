@@ -53,7 +53,7 @@ class SessionParser
         )) {
             $day       = (int)$matches[1];
             $monthName = $matches[2];
-            $year      = isset($matches[3]) ? (int)$matches[3] : $now->year;
+            $year      = !empty($matches[3]) ? (int)$matches[3] : $now->year;
             $time      = $matches[4];
 
             $month = $months[$monthName] ?? null;
