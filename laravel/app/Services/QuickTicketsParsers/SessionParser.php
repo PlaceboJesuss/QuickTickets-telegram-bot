@@ -3,6 +3,7 @@
 namespace App\Services\QuickTicketsParsers;
 
 use Carbon\Carbon;
+use Carbon\CarbonTimeZone;
 use Exception;
 use simple_html_dom\simple_html_dom_node as SimpleHtmlDomNode;
 
@@ -42,24 +43,35 @@ class SessionParser
             'декабря'  => 12,
         ];
 
-        if (preg_match('/(\d{1,2}) (\p{L}+) (\d{2}:\d{2})/u', $dateString, $matches)) {
-            $day = (int)$matches[1];
+        $tz = new CarbonTimeZone('Europe/Moscow');
+        $now = Carbon::now($tz);
+
+        if (preg_match(
+            '/(\d{1,2})\s+(\p{L}+)(?:\s+(\d{4}))?\s+(\d{2}:\d{2})/u',
+            $dateString,
+            $matches
+        )) {
+            $day       = (int)$matches[1];
             $monthName = $matches[2];
-            $time = $matches[3];
+            $year      = isset($matches[3]) ? (int)$matches[3] : $now->year;
+            $time      = $matches[4];
 
             $month = $months[$monthName] ?? null;
             if (!$month) {
                 throw new \Exception("Неизвестный месяц: $monthName");
             }
 
-            // Текущий год
-            $year = (int)date('Y');
+            $date = Carbon::createFromFormat(
+                'Y-n-j H:i',
+                "$year-$month-$day $time",
+                $tz
+            );
 
-            // Создаём объект Carbon
-            $date = Carbon::createFromFormat('Y-n-d H:i', "$year-$month-$day $time");
-
-            // Если дата уже прошла — прибавляем год
-            if ($date->lt(now())) {
+            /**
+             * Если год не указан явно и дата уже прошла
+             * → переносим на следующий год
+             */
+            if (!isset($matches[3]) && $date->lt($now)) {
                 $date->addYear();
             }
 
