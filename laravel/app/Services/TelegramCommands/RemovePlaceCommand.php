@@ -42,7 +42,9 @@ final class RemovePlaceCommand extends Command
         );
 
         // Удаляем связь с местом, если она существует
-        $user->places()->detach($placeId);
+        if (!empty($placeId)) {
+            $user->places()->detach($placeId);
+        }
 
         $keyboard = Keyboard::make()
             ->setResizeKeyboard(true) // подгоняет по размеру
