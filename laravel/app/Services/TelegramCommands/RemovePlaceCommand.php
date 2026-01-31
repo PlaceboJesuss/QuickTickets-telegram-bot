@@ -41,11 +41,8 @@ final class RemovePlaceCommand extends Command
             ['username' => $username]
         );
 
-        $place = $user->places()->where('places.id', $placeId)->first();
-
-        if ($place) {
-            $place->delete();
-        }
+        // Удаляем связь с местом, если она существует
+        $user->places()->detach($placeId);
 
         $keyboard = Keyboard::make()
             ->setResizeKeyboard(true) // подгоняет по размеру
