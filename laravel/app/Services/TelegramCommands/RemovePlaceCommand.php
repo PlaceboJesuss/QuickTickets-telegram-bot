@@ -6,6 +6,7 @@ use App\Models\TelegramUser;
 use Telegram\Bot\Commands\Command;
 use Telegram\Bot\Keyboard\Keyboard;
 use Telegram\Bot\Laravel\Facades\Telegram;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Class HelpCommand.
@@ -35,6 +36,8 @@ final class RemovePlaceCommand extends Command
         $chatId = $this->argument('chat_id');
         $username = $this->argument('username');
         $placeId = $this->argument('place_id');
+
+        Log::info('Telegram Webhook received:', ["chatId" => $chatId, "placeId" => $placeId]);
 
         $user = TelegramUser::firstOrCreate(
             ['chat_id' => $chatId],
