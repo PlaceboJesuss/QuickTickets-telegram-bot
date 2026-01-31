@@ -8,6 +8,7 @@ use App\Services\QuickTicketsParsers\DomParser;
 use App\Services\QuickTicketsParsers\PerformanceParser;
 use App\Services\QuickTicketsParsers\SessionParser;
 use App\Services\QuickTicketsService;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
@@ -75,7 +76,7 @@ class CheckQuickTickets extends Command
                                     'chat_id' => $user->chat_id,
                                     'photo' => InputFile::create($image),
                                     'caption' => "Появился новый спектакль \"$name\""
-                                        . "\n" . date('d.m.Y H:i', $timestamp)
+                                        . "\n" . Carbon::createFromTimestamp($timestamp, 'UTC')->setTimezone('Europe/Moscow')->format('d.m.Y H:i')
                                         . "\n\n" . $place->name,
                                     'reply_markup' => $keyboard
                                 ]);
@@ -89,7 +90,7 @@ class CheckQuickTickets extends Command
                                         'chat_id' => $user->chat_id,
                                         'photo' => InputFile::create($image),
                                         'caption' => "Появились билеты на \"$name\""
-                                        . "\n" . date('d.m.Y H:i', $timestamp)
+                                        . "\n" . Carbon::createFromTimestamp($timestamp, 'UTC')->setTimezone('Europe/Moscow')->format('d.m.Y H:i')
                                         . "\n\n" . $place->name,
                                         'reply_markup' => $keyboard
                                     ]);
