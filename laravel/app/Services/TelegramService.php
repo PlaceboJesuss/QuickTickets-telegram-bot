@@ -32,11 +32,16 @@ class TelegramService
     public function handleMessage(int $chatId, ?string $username, string $message): void
     {
         $commandHandler = $this->getCommandHandler($message);
-        $commandHandler->setArguments([
-            "chat_id" => $chatId,
-            "username" => $username,
-            "message" => $message,
-        ]);
+        $commandHandler->setArguments(
+            array_merge(
+                [
+                    "chat_id" => $chatId,
+                    "username" => $username,
+                    "message" => $message,
+                ],
+                $commandHandler->getArguments()
+            )
+        );
 
         $commandHandler->handle();
     }
