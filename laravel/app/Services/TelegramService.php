@@ -8,6 +8,7 @@ use App\Services\TelegramCommands\RemovePlaceCommand;
 use App\Services\TelegramCommands\RemovePlacesCommand;
 use App\Services\TelegramCommands\StartCommand;
 use Telegram\Bot\Commands\Command;
+use Illuminate\Support\Facades\Log;
 
 class TelegramService
 {
@@ -15,6 +16,7 @@ class TelegramService
     {
         if (str_starts_with($message, 'remove_place_')) {
             $id = (int) substr($message, strlen('remove_place_'));
+            Log::info('Telegram Webhook received:', ["message" => $message, "id" => $id]);
 
             $handler = new RemovePlaceCommand();
             $handler->setArguments(['place_id' => $id]);
