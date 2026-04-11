@@ -23,7 +23,6 @@ class TelegramProxyClient implements HttpClientInterface
         ];
 
         if ($proxy = env('TELEGRAM_PROXY')) {
-            Log::info("Используем прокси");
             $options['proxy'] = $proxy;
         }
 
