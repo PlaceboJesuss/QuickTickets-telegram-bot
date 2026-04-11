@@ -81,6 +81,11 @@ return [
     */
     'http_client_handler' => null,
 
+    'http_client_options' => array_filter([
+        'proxy' => env('TELEGRAM_PROXY'),
+        'timeout' => 20,
+    ]),
+
     /*
     |--------------------------------------------------------------------------
     | Base Bot Url [Optional]
