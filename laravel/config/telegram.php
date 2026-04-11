@@ -79,12 +79,7 @@ return [
     | Default: GuzzlePHP
     |
     */
-    'http_client_handler' => null,
-
-    'http_client_options' => array_filter([
-        'proxy' => env('TELEGRAM_PROXY'),
-        'timeout' => 20,
-    ]),
+    'http_client_handler' => \App\Clients\TelegramProxyClient::class ,
 
     /*
     |--------------------------------------------------------------------------
