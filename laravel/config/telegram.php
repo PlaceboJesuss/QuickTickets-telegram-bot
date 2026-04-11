@@ -79,7 +79,7 @@ return [
     | Default: GuzzlePHP
     |
     */
-    'http_client_handler' => \App\Clients\TelegramProxyClient::class ,
+    'http_client_handler' => new \App\Clients\TelegramProxyClient(),
 
     /*
     |--------------------------------------------------------------------------
