@@ -4,6 +4,8 @@ namespace App\Clients;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Promise\PromiseInterface;
+use GuzzleHttp\RequestOptions;
+use Illuminate\Support\Facades\Log;
 use Psr\Http\Message\ResponseInterface;
 use Telegram\Bot\HttpClients\HttpClientInterface;
 
@@ -21,6 +23,7 @@ class TelegramProxyClient implements HttpClientInterface
         ];
 
         if ($proxy = config('TELEGRAM_PROXY')) {
+            Log::info("Используем прокси");
             $options['proxy'] = $proxy;
         }
 
@@ -64,6 +67,7 @@ class TelegramProxyClient implements HttpClientInterface
         ];
 
         if ($proxy = config('TELEGRAM_PROXY')) {
+            Log::info("Используем прокси");
             $guzzleOptions['proxy'] = $proxy;
         }
 
