@@ -22,7 +22,7 @@ class TelegramProxyClient implements HttpClientInterface
             'connect_timeout' => $this->connectTimeout,
         ];
 
-        if ($proxy = config('TELEGRAM_PROXY')) {
+        if ($proxy = env('TELEGRAM_PROXY')) {
             Log::info("Используем прокси");
             $options['proxy'] = $proxy;
         }
@@ -66,7 +66,7 @@ class TelegramProxyClient implements HttpClientInterface
             'connect_timeout' => $this->connectTimeout,
         ];
 
-        if ($proxy = config('TELEGRAM_PROXY')) {
+        if ($proxy = env('TELEGRAM_PROXY')) {
             Log::info("Используем прокси");
             $guzzleOptions['proxy'] = $proxy;
         }
